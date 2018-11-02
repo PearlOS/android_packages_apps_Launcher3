@@ -97,6 +97,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.android.launcher3.ItemInfoWithIcon.FLAG_ICON_BADGED;
+
+import com.android.internal.util.du.Utils;
+
 /**
  * Various utilities shared amongst the Launcher's classes.
  */
@@ -136,6 +140,21 @@ public final class Utilities {
     public static final int EDGE_NAV_BAR = 1 << 8;
 
     /**
+<<<<<<< HEAD
+=======
+     * Set on a motion event do disallow any gestures and only handle touch.
+     * See {@link MotionEvent#setEdgeFlags(int)}.
+     */
+    public static final int FLAG_NO_GESTURES = 1 << 9;
+
+    static final String KEY_SHOW_SEARCHBAR = "pref_show_searchbar";
+
+    public static boolean shouldDisableGestures(MotionEvent ev) {
+        return (ev.getEdgeFlags() & FLAG_NO_GESTURES) == FLAG_NO_GESTURES;
+    }
+
+    /**
+>>>>>>> 60763c43d... Set a toggle to show Search bar on first screen
      * Indicates if the device has a debug build. Should only be used to store additional info or
      * add extra logging and not for changing the app behavior.
      */
@@ -157,6 +176,9 @@ public final class Utilities {
     private static final int CORE_POOL_SIZE = CPU_COUNT + 1;
     private static final int MAXIMUM_POOL_SIZE = CPU_COUNT * 2 + 1;
     private static final int KEEP_ALIVE = 1;
+
+    public static final String SEARCH_PACKAGE = "com.google.android.googlequicksearchbox";
+
     /**
      * An {@link Executor} to be used with async task with no limit on the queue size.
      */
@@ -778,6 +800,13 @@ public final class Utilities {
             return mSize;
         }
     }
+    public static boolean showQSB(Context context) {
+        SharedPreferences prefs = getPrefs(context.getApplicationContext());
+        if (!Utils.isPackageInstalled(context, SEARCH_PACKAGE)) {
+            return false;
+        }
+        return prefs.getBoolean(KEY_SHOW_SEARCHBAR, true);
+    }
 
     public static void restart(final Context context) {
         new LooperExecutor(LauncherModel.getWorkerLooper()).execute(() -> {
@@ -788,5 +817,4 @@ public final class Utilities {
             android.os.Process.killProcess(android.os.Process.myPid());
         });
     }
-
 }
